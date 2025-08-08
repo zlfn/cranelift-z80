@@ -5,17 +5,33 @@ use cranelift_control::ControlPlane;
 use target_lexicon::Triple;
 
 use crate::ir;
+use crate::isa::Builder as IsaBuilder;
+use crate::isa::z80::settings as z80_settings;
 use crate::machinst::CompiledCode;
 use crate::settings::{self as shared_settings, Flags};
 use crate::{
     CodegenResult, dominator_tree::DominatorTree, ir::Function, machinst::CompiledCodeStencil,
 };
 
-use super::{FunctionAlignment, IsaFlagsHashKey, TargetIsa};
+use super::{FunctionAlignment, IsaFlagsHashKey, OwnedTargetIsa, TargetIsa};
+
+pub mod settings;
 
 pub(crate) struct Z80Backend {
     triple: Triple,
     flags: Flags,
+    z80_flags: z80_settings::Flags,
+}
+
+impl Z80Backend {
+    /// Create a new Z80 backend with the given (shared) flags.
+    fn new_with_flags(triple: Triple, flags: Flags, z80_flags: z80_settings::Flags) -> Self {
+        Self {
+            triple,
+            flags,
+            z80_flags,
+        }
+    }
 }
 
 impl TargetIsa for Z80Backend {
@@ -34,11 +50,11 @@ impl TargetIsa for Z80Backend {
     }
 
     fn isa_flags(&self) -> Vec<shared_settings::Value> {
-        todo!()
+        self.z80_flags.iter().collect()
     }
 
     fn isa_flags_hash_key(&self) -> IsaFlagsHashKey<'_> {
-        todo!()
+        IsaFlagsHashKey(self.z80_flags.hash_key())
     }
 
     fn dynamic_vector_bytes(&self, _dyn_ty: crate::ir::Type) -> u32 {
@@ -140,4 +156,23 @@ impl fmt::Display for Z80Backend {
             .field("flags", &format!("{}", self.flags()))
             .finish()
     }
+}
+
+/// Create a new `isa::Builder`.
+pub(crate) fn isa_builder(triple: Triple) -> IsaBuilder {
+    IsaBuilder {
+        triple,
+        setup: z80_settings::builder(),
+        constructor: isa_constructor,
+    }
+}
+
+fn isa_constructor(
+    triple: Triple,
+    shared_flags: Flags,
+    builder: &shared_settings::Builder,
+) -> CodegenResult<OwnedTargetIsa> {
+    let isa_flags = z80_settings::Flags::new(&shared_flags, builder);
+    let backend = Z80Backend::new_with_flags(triple, shared_flags, isa_flags);
+    Ok(backend.wrapped())
 }

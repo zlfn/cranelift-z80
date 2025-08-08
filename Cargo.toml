@@ -310,7 +310,9 @@ component-async-tests = { path = "crates/misc/component-async-tests" }
 regalloc2 = "0.12.2"
 
 # cap-std family:
-target-lexicon = "0.13.0"
+# TODO: Remove this when PR
+# target-lexicon = "0.13.0"
+target-lexicon = { git = "https://github.com/zlfn/target-lexicon.git" }
 cap-std = "3.4.4"
 cap-rand = { version = "3.4.4", features = ["small_rng"] }
 cap-fs-ext = "3.4.4"

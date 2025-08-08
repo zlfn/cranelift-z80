@@ -89,7 +89,7 @@ x86 = []
 arm64 = []
 s390x = []
 riscv64 = []
-z80 = []
+z80 = ["target-lexicon/arch_z80"]
 pulley = [
     "dep:pulley-interpreter",
     "pulley-interpreter/encode",
@@ -100,7 +100,7 @@ pulley = [
 host-arch = []
 
 # Option to enable all architectures.
-all-arch = ["all-native-arch", "pulley"]
+all-arch = ["all-native-arch", "pulley", "z80"]
 
 # Option to enable all architectures that correspond to an actual native target
 # (that is, exclude Pulley).

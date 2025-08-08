@@ -6,8 +6,8 @@ mod arm64;
 mod pulley;
 mod riscv64;
 mod s390x;
-mod z80;
 pub(crate) mod x86;
+mod z80;
 
 /// Represents known ISA target.
 #[derive(PartialEq, Copy, Clone)]

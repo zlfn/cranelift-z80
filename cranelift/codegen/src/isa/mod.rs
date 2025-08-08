@@ -122,6 +122,10 @@ pub fn lookup(triple: Triple) -> Result<Builder, LookupError> {
         Architecture::Pulley64 | Architecture::Pulley64be => {
             isa_builder!(pulley64, (feature = "pulley"), triple)
         }
+        #[cfg(feature = "z80")]
+        Architecture::Z80(_) => {
+            isa_builder!(z80, (feature = "z80"), triple)
+        }
         _ => Err(LookupError::Unsupported),
     }
 }

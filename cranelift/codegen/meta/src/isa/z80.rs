@@ -37,7 +37,7 @@ pub(crate) fn define() -> TargetIsa {
         "Has DJNZ instruction",
         "DJNZ (Decrement and Jump if Not Zero) instruction that decrements the B register and jumps \
           to a specified address if the result is not zero.",
-        true, 
+        true,
     );
 
     settings.add_bool(
