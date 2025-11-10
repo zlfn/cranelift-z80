@@ -15,33 +15,29 @@ pub(crate) fn emit(
         Inst::Nop => {
             emit_nop(sink);
         }
+        Inst::Halt => {
+            emit_halt(sink);
+        }
         _ => {
             todo!()
         }
     }
-    // TODO: Implement actual instruction encoding
-    // This will match on each instruction variant and emit the appropriate bytes
-
-    // For now, this is a placeholder that will be implemented
-    // once we define the actual instruction variants in ISLE
-    let _ = (inst, sink, info, state);
-    todo!("Implement instruction emission for Z80")
 }
 
 /// Emit a NOP instruction (0x00)
-#[allow(dead_code)]
+/// Encoding: 0000_0000
 fn emit_nop(sink: &mut MachBuffer<Inst>) {
     sink.put1(0x00);
 }
 
 /// Emit a HALT instruction (0x76)
-#[allow(dead_code)]
+/// Encoding: 0111_0110
 fn emit_halt(sink: &mut MachBuffer<Inst>) {
     sink.put1(0x76);
 }
 
-/// Emit an LD r, n instruction (load immediate into register)
-/// Encoding: 00_rrr_110 nn
+/// Emit an LD r, n instruction (load 8-bit immediate into register)
+/// Encoding: 00_rrr_110 n
 /// Example: LD A, 42  =>  0x3E 0x2A  (A=111, so 00_111_110 = 0x3E)
 #[allow(dead_code)]
 fn emit_ld_r_imm8(sink: &mut MachBuffer<Inst>, reg_hw_enc: u8, imm: u8) {
@@ -49,6 +45,17 @@ fn emit_ld_r_imm8(sink: &mut MachBuffer<Inst>, reg_hw_enc: u8, imm: u8) {
     let opcode = 0b00_000_110 | (reg_hw_enc << 3);
     sink.put1(opcode);
     sink.put1(imm);
+}
+
+/// Emit an LD rp, nn instruction (load 16-bit immediate into register pair)
+/// Encoding: 00_rp_0001 n_lo n_hi
+#[allow(dead_code)]
+fn emit_ld_rp_imm16(sink: &mut MachBuffer<Inst>, reg_hw_enc: u8, imm: u16) {
+    debug_assert!(reg_hw_enc <= 3, "16-bit register encoding must be 0-3");
+    let opcode = 0b00_000_001 | (reg_hw_enc << 4);
+    sink.put1(opcode);
+    sink.put1((imm & 0x00FF) as u8);       // Low byte
+    sink.put1(((imm & 0xFF00) >> 8) as u8); // High byte
 }
 
 /// Emit an LD r, r' instruction (load register to register)

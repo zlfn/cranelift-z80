@@ -86,16 +86,16 @@ pub(crate) fn a() -> Reg {
 ///   11 (3) = AF
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
-pub enum Gpp16 {
+pub enum Gprp16 {
     BC = 0b00,
     DE = 0b01,
 }
 
-impl Gpp16 {
+impl Gprp16 {
     fn to_gpr8_high_low(self) -> (Gpr8, Gpr8) {
         match self {
-            Gpp16::BC => (Gpr8::B, Gpr8::C),
-            Gpp16::DE => (Gpr8::D, Gpr8::E),
+            Gprp16::BC => (Gpr8::B, Gpr8::C),
+            Gprp16::DE => (Gpr8::D, Gpr8::E),
         }
     }
 }
