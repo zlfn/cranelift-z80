@@ -1,0 +1,7 @@
+(type MInst 
+    (enum
+    ;; No operation is performed
+    (Nop)
+    ;; Suspends CPU operation until an interrupt or reset occurs.
+    (Halt)
+))

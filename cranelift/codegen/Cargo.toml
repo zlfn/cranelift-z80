@@ -89,7 +89,10 @@ x86 = []
 arm64 = []
 s390x = []
 riscv64 = []
-z80 = ["target-lexicon/arch_z80"]
+z80 = [
+    "target-lexicon/arch_z80",
+    "cranelift-codegen-meta/z80"
+]
 pulley = [
     "dep:pulley-interpreter",
     "pulley-interpreter/encode",

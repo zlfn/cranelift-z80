@@ -1,6 +1,10 @@
 use core::fmt;
-use std::vec::Vec;
 
+use alloc::boxed::Box;
+use alloc::vec::Vec;
+use core::fmt::Debug;
+use core::marker::PhantomData;
+use std::string::String;
 use cranelift_control::ControlPlane;
 use target_lexicon::Triple;
 
@@ -16,6 +20,10 @@ use crate::{
 use super::{FunctionAlignment, IsaFlagsHashKey, OwnedTargetIsa, TargetIsa};
 
 pub mod settings;
+pub(crate) mod abi;
+pub(crate) mod sdcc;
+mod lower;
+mod inst;
 
 pub(crate) struct Z80Backend {
     triple: Triple,
@@ -37,10 +45,10 @@ impl Z80Backend {
 impl TargetIsa for Z80Backend {
     fn compile_function(
         &self,
-        func: &Function,
-        domtree: &DominatorTree,
-        want_disasm: bool,
-        ctrl_plane: &mut ControlPlane,
+        _func: &Function,
+        _domtree: &DominatorTree,
+        _want_disasm: bool,
+        _ctrl_plane: &mut ControlPlane,
     ) -> CodegenResult<CompiledCodeStencil> {
         todo!()
     }
@@ -71,7 +79,7 @@ impl TargetIsa for Z80Backend {
 
     fn text_section_builder(
         &self,
-        num_labeled_funcs: usize,
+        _num_labeled_funcs: usize,
     ) -> std::prelude::v1::Box<dyn crate::TextSectionBuilder> {
         todo!()
     }
@@ -84,7 +92,7 @@ impl TargetIsa for Z80Backend {
         todo!()
     }
 
-    fn pretty_print_reg(&self, reg: crate::Reg, size: u8) -> std::string::String {
+    fn pretty_print_reg(&self, _reg: crate::Reg, _size: u8) -> std::string::String {
         todo!()
     }
 
@@ -98,7 +106,7 @@ impl TargetIsa for Z80Backend {
         false
     }
 
-    fn has_x86_blendv_lowering(&self, ty: crate::ir::Type) -> bool {
+    fn has_x86_blendv_lowering(&self, _ty: crate::ir::Type) -> bool {
         false
     }
 
@@ -121,16 +129,14 @@ impl TargetIsa for Z80Backend {
     #[cfg(feature = "unwind")]
     fn emit_unwind_info(
         &self,
-        result: &CompiledCode,
-        kind: crate::isa::unwind::UnwindInfoKind,
+        _result: &CompiledCode,
+        _kind: crate::isa::unwind::UnwindInfoKind,
     ) -> CodegenResult<Option<crate::isa::unwind::UnwindInfo>> {
         unimplemented!("Z80 does not support unwinding");
     }
 
     #[cfg(feature = "unwind")]
     fn create_systemv_cie(&self) -> Option<gimli::write::CommonInformationEntry> {
-        // Z80 thinks System V is just Saturn V spelled wrong.
-        // (Z80 launched in 1976, Unix System V 1983)
         None
     }
 
